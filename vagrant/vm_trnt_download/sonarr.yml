@@ -1,0 +1,60 @@
+---
+
+  - hosts: all
+    connection: local
+
+    tasks:
+      ## Add keys for mono and sonarr
+       - name: Add mono key
+         apt_key:
+           keyserver: hkp://keyserver.ubuntu.com:80
+           id: 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+         tags:
+           - mono_key
+       - name: Add sonarr key
+         apt_key:
+           keyserver: keyserver.ubuntu.com
+           id: D9B78493
+         tags:
+           - sonarr_key
+      ## add the repos
+       - name: Add repos required for sonarr
+         apt_repository:
+           repo: '{{ item }}'
+           state: present
+           update_cache: yes
+         with_items:
+           - deb http://download.mono-project.com/repo/debian wheezy main
+           - deb http://apt.sonarr.tv/ master main
+         tags:
+           - sonarr_repo
+     ## Install the packages
+       - name: Install Mono and Sonarr
+         apt:
+           name: '{{ item }}'
+           update_cache: yes
+         with_items:
+           - mono-devel
+           - nzbdrone
+       - name: Copy nzbdrone service file
+         template:
+           src: /vagrant/sonarr_config/nzbdrone
+           dest: /etc/init.d/
+       - name: Copy nzbdrone config files
+         copy:
+           src: /vagrant/sonarr_config/.config/NzbDrone/
+           dest: /home/vagrant/.config/NzbDrone/
+           owner: vagrant
+           group: vagrant
+           mode: 0644
+       - name: Change nzbdrone to +x
+         file:
+           path: /etc/init.d/nzbdrone
+           mode: 0755
+       - name: Add nzbdrone service
+         shell: chmod +x /etc/init.d/nzbdrone ; ln -s /usr/lib/insserv/insserv /sbin/insserv ; insserv -v nzbdrone
+       - name: Enable service for nzbdrone
+         service:
+           name: nzbdrone
+           state: started
+           enabled: yes

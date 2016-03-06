@@ -1,0 +1,47 @@
+---
+
+  - hosts: all
+    connection: local
+
+    tasks:
+     ## Install the packages
+       - name: Install Transmission
+         apt:
+           name: '{{ item }}'
+           update_cache: yes
+         with_items:
+           - transmission-daemon
+       - name: Stop the transmission service
+         service:
+           name: transmission-daemon
+           state: stopped
+      # - name: extract ip address
+      # shell: ifconfig eth1 | grep 'inet addr'| tr -s ' ' | cut -d ':' -f2 | cut -d ' ' -f1
+      #   delegate_to: host
+      #   register: localhost_ip
+       - name: copy transmission configuration files
+         template:
+           src:  "{{item.src}}"
+           dest: "{{item.dest}}"
+           owner: root
+           group: root
+         with_items:
+           - { src: '/vagrant/transmission_config/transmission-daemon.conf', dest: "/etc/init/" }
+           - { src: '/vagrant/transmission_config/transmission-daemon', dest: '/etc/init.d/' }
+       - name: copy transmission settings file
+         template:
+           src: /vagrant/transmission_config/settings.json
+           dest: /var/lib/transmission-daemon/info/
+           owner: vagrant
+           group: vagrant
+       - name: change owner of transmission-daemon directory
+         file:
+           path: /var/lib/transmission-daemon
+           state: directory
+           recurse: yes
+           owner: vagrant
+           group: vagrant
+       - name: start service
+         service:
+           name: transmission-daemon
+           state: restarted
