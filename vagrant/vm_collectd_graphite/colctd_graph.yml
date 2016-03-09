@@ -1,0 +1,48 @@
+- hosts: all
+  connection: local
+
+  tasks:
+    - name: Install collectd and graphite
+      apt:
+        name: '{{ item }}'
+        update_cache: yes
+        cache_valid_time: 3600
+      with_items:
+        - collectd
+        - collectd-utils
+        - graphite-web
+        - graphite-carbon
+        - apache2
+        - libapache2-mod-wsgi
+    - name: Replace lines in files
+      replace:
+        dest:    '{{ item.dest    }}'
+        regexp:  '{{ item.regexp  }}'
+        replace: '{{ item.replace }}'
+      with_items:
+        - { dest: '/etc/graphite/local_settings.py', regexp: "^#SECRET_KEY = '.*'",               replace: 'SECRET_KEY = "this_is_a_very_salty_string"' }
+        - { dest: '/etc/graphite/local_settings.py', regexp: "#USE_REMOTE_USER_AUTHENTICATION.*", replace: "USE_REMOTE_USER_AUTHENTICATION = True" }
+        - { dest: '/etc/graphite/local_settings.py', regexp: "#TIME_ZONE = '.*'",                 replace: "TIME_ZONE = 'Europe/London'" }
+        - { dest: '/etc/graphite/local_settings.py', regexp: '(\s+)''HOST''.*',                   replace: '\1''HOST'': ''127.0.0.1'','  }
+        - { dest: '/etc/default/graphite-carbon',    regexp: 'CARBON_CACHE_ENABLED.*',            replace: 'CARBON_CACHE_ENABLED=true' }
+        - { dest: '/etc/carbon/carbon.conf',         regexp: 'ENABLE_LOGROTATION.*',              replace: 'ENABLE_LOGROTATION = True' }
+        - { dest: '/etc/collectd/collectd.conf',     regexp: '^#Hostname.*',                      replace: 'Hostname "graph_host"' }
+        - { dest: '/etc/collectd/collectd.conf',     regexp: '^LoadPlugin (.*)',                  replace: '#LoadPlugin \1' }
+        - { dest: '/etc/collectd/collectd.conf',     regexp: '^#LoadPlugin cpu$',                 replace: 'LoadPlugin cpu' }
+        - { dest: '/etc/collectd/collectd.conf',     regexp: '^#LoadPlugin load',                 replace: 'LoadPlugin load' }
+        - { dest: '/etc/collectd/collectd.conf',     regexp: '^#LoadPlugin memory',               replace: 'LoadPlugin memory' }
+        - { dest: '/etc/collectd/collectd.conf',     regexp: '^#LoadPlugin interface',            replace: 'LoadPlugin interface' }
+    - name: Run command
+      shell: sudo graphite-manage syncdb --noinput ; sudo a2dissite 000-default ; sudo cp /usr/share/graphite-web/apache2-graphite.conf /etc/apache2/sites-available ; sudo a2ensite apache2-graphite
+    - name: Chown graphite db
+      file:
+        path: /var/lib/graphite/graphite.db
+        owner: _graphite
+        group: _graphite
+    - name: start services
+      service:
+        name:  '{{ item.name }}'
+        state: '{{ item.type }}'
+      with_items:
+        - { name: 'carbon-cache', type: 'started' }
+        - { name: 'apache2',      type: 'reloaded'}
