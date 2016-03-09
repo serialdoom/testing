@@ -44,5 +44,5 @@
         name:  '{{ item.name }}'
         state: '{{ item.type }}'
       with_items:
-        - { name: 'carbon-cache', type: 'started' }
+        - { name: 'carbon-cache', type: 'restarted' }
         - { name: 'apache2',      type: 'reloaded'}
