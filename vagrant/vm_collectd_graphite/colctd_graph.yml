@@ -39,10 +39,15 @@
         path: /var/lib/graphite/graphite.db
         owner: _graphite
         group: _graphite
+    - name: Copy collectd.conf file
+      template:
+        src: /vagrant/collectd.conf
+        dest: /etc/collectd/
     - name: start services
       service:
         name:  '{{ item.name }}'
         state: '{{ item.type }}'
       with_items:
-        - { name: 'carbon-cache', type: 'restarted' }
         - { name: 'apache2',      type: 'reloaded'}
+        - { name: 'carbon-cache', type: 'restarted' }
+        - { name: 'collectd',      type: 'restarted'}
