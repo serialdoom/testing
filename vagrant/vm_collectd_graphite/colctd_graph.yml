@@ -14,6 +14,7 @@
         - graphite-carbon
         - apache2
         - libapache2-mod-wsgi
+
     - name: Replace lines in files
       replace:
         dest:    '{{ item.dest    }}'
@@ -32,22 +33,36 @@
         - { dest: '/etc/collectd/collectd.conf',     regexp: '^#LoadPlugin load',                 replace: 'LoadPlugin load' }
         - { dest: '/etc/collectd/collectd.conf',     regexp: '^#LoadPlugin memory',               replace: 'LoadPlugin memory' }
         - { dest: '/etc/collectd/collectd.conf',     regexp: '^#LoadPlugin interface',            replace: 'LoadPlugin interface' }
+
     - name: Run command
       shell: sudo graphite-manage syncdb --noinput ; sudo a2dissite 000-default ; sudo cp /usr/share/graphite-web/apache2-graphite.conf /etc/apache2/sites-available ; sudo a2ensite apache2-graphite
+
     - name: Chown graphite db
       file:
         path: /var/lib/graphite/graphite.db
         owner: _graphite
         group: _graphite
+
     - name: Copy collectd.conf file
       template:
         src: /vagrant/collectd.conf
         dest: /etc/collectd/
+
+    # Need to stop services first before starting them again
+    - name: stop services
+      service:
+        name:  '{{ item.name }}'
+        state: '{{ item.type }}'
+      with_items:
+        - { name: 'apache2',      type: 'stopped'}
+        - { name: 'carbon-cache', type: 'stopped' }
+        - { name: 'collectd',     type: 'stopped'}
+
     - name: start services
       service:
         name:  '{{ item.name }}'
         state: '{{ item.type }}'
       with_items:
-        - { name: 'apache2',      type: 'reloaded'}
-        - { name: 'carbon-cache', type: 'restarted' }
-        - { name: 'collectd',      type: 'restarted'}
+        - { name: 'apache2',      type: 'started'}
+        - { name: 'carbon-cache', type: 'started' }
+        - { name: 'collectd',     type: 'started'}
