@@ -37,7 +37,3 @@
       - { src: 'roles/sonarr/files/NzbDrone_config/', dest: '/home/vagrant/.config/NzbDrone/', owner: 'vagrant', group: 'vagrant', mode: '0644' }
       - { src: 'roles/sonarr/files/nzbdrone',         dest: '/etc/init.d/',                    owner: 'root',    group: 'root',    mode: '0755' }
     notify: nzbdrone service
-
-  #- name: Add nzbdrone service
-  #  shell: /usr/lib/insserv/insserv -v nzbdrone
-  #  notify: nzbdrone service

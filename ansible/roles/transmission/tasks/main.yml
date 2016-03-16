@@ -1,2 +1,39 @@
 ---
 # tasks file for transmission
+  - name: Install Transmission
+    apt:
+      name: '{{ item }}'
+      update_cache: yes
+    with_items:
+      - transmission-daemon
+    notify:
+      - Stop transmission service
+
+  - name: Stop transmission service
+    service:
+      name: transmission-daemon
+      state: stopped
+
+  - name: change owner of transmission-daemon directory
+    file:
+      path: /var/lib/transmission-daemon
+      state: directory
+      recurse: yes
+      owner: vagrant
+      group: vagrant
+
+  - name: copy transmission configuration files
+    template:
+      src:  "{{item.src}}"
+      dest: "{{item.dest}}"
+      owner: "{{item.owner}}"
+      group: "{{item.group}}"
+    with_items:
+      - { src: 'roles/transmission/files/transmission-daemon.conf', dest: '/etc/init/', owner: 'root', group: 'root' }
+      - { src: 'roles/transmission/files/transmission-daemon', dest: '/etc/init.d/', owner: 'root', group: 'root' }
+      - { src: 'roles/transmission/templates/settings.json', dest: '/var/lib/transmission-daemon/info/', owner: 'vagrant', group: 'vagrant' }
+
+  - name: Start transmission service
+    service:
+      name: transmission-daemon
+      state: restarted

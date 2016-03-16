@@ -1,6 +1,5 @@
 ---
 # file: trnt_download.yml
-- hosts: downloaders 
+- hosts: downloaders
   roles:
     - { role: sonarr, become: True}
-    - transmission
