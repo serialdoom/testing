@@ -1,0 +1,4 @@
+[downloaders]
+192.168.0.100	ansible_connection=ssh	ansible_user=vagrant
+
+

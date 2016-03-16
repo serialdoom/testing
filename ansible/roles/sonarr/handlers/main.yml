@@ -1,0 +1,7 @@
+---
+# handlers file for sonarr
+    - name: nzbdrone service
+      service:
+        name: nzbdrone
+        state: started
+        enabled: yes
