@@ -1,4 +1,24 @@
+[downloader]
+192.168.0.100 ansible_connection=ssh	ansible_user=vagrant
+
 [downloaders]
-192.168.0.100	ansible_connection=ssh	ansible_user=vagrant
+downloader
 
+[logstash_server]
+192.168.0.101 ansible_connection=ssh	ansible_user=vagrant
 
+[elasticsearch_server]
+192.168.0.102 ansible_connection=ssh	ansible_user=vagrant
+
+[kibana_server]
+192.168.0.103 ansible_connection=ssh	ansible_user=vagrant
+
+[consul_servers]
+192.168.0.[101:103] ansible_connection=ssh	ansible_user=vagrant
+
+[consul_clients]
+192.168.0.[104:106] ansible_connection=ssh ansible_user=vagrant
+
+[consul:children]
+consul_servers
+consul_clients

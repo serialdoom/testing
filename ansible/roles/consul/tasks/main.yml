@@ -1,0 +1,35 @@
+---
+# tasks file for consul
+  - name: Install unzip
+    apt:
+      name: '{{ item }}'
+      update_cache: yes
+    with_items:
+      - unzip
+
+  - name: Get the consul binary
+    get_url:
+      url:  https://releases.hashicorp.com/consul/0.6.4/consul_0.6.4_linux_amd64.zip
+      dest: /home/vagrant/
+
+  - name: Uncompress the binary
+    unarchive:
+      src: /home/vagrant/consul_0.6.4_linux_amd64.zip
+      dest: /usr/local/bin/
+      copy: no
+
+  - name: Ensures consul dir exists
+    file:
+      path: /etc/consul.d
+      state: directory
+
+  - name: Copy the consul config file
+    template:
+      src:  '{{ item.src  }}'
+      dest: '{{ item.dest }}'
+    with_items:
+      - { src: "roles/consul/templates/config.json", dest: "/etc/consul.d/"}
+      - { src: "roles/consul/files/consul.conf", dest: "/etc/init/"}
+
+  - name: Start the consul service
+    shell: "start consul"

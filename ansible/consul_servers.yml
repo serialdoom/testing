@@ -1,0 +1,5 @@
+---
+# file: trnt_download.yml
+- hosts: consul_servers
+  roles:
+    - { role: consul, become: True}

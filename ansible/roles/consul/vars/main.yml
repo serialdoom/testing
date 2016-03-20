@@ -1,0 +1,4 @@
+---
+# vars file for consul
+datacenter: "test_lab"
+data_dir  : "/tmp/consul"

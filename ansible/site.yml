@@ -1,2 +1,3 @@
 ---
   - include: trnt_download.yml
+  - include: consul_servers.yml
