@@ -4,7 +4,6 @@
   "log_level"        : "INFO",
   "node_name"        : "{{ node_name }}",
   "server"           : {{ server }},
-  "bootstrap_expect" : 3,
   "ui_dir"           : "/opt/dist",
   "bind_addr"        : "{{ ansible_eth1.ipv4.address}}",
   "start_join"       : ["192.168.0.101"]
