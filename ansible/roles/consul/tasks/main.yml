@@ -6,6 +6,7 @@
       update_cache: yes
     with_items:
       - unzip
+      - dnsmasq
 
   - name: Get the consul binary
     get_url:
@@ -30,6 +31,12 @@
     with_items:
       - { src: "roles/consul/templates/config.json", dest: "/etc/consul.d/"}
       - { src: "roles/consul/files/consul.conf", dest: "/etc/init/"}
+      - { src: "roles/consul/files/10-consul", dest: "/etc/dnsmasq.d/"}
 
   - name: Start the consul service
-    shell: "start consul"
+    shell: "stop consul || true && start consul"
+
+  - name: Restart dnsmasq service
+    service:
+      name: dnsmasq
+      state: restarted

@@ -1,0 +1,10 @@
+{
+  "service": {
+    "name": "nginx",
+    "tags": ["master"],
+    "port": 80,
+    "address": "{{ ansible_eth1.ipv4.address }}",
+    "id": "nginx{{ ansible_eth1["ipv4"]["address"][10:13] }}",
+    "enableTagOverride": false
+  }
+}

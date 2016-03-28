@@ -1,0 +1,36 @@
+---
+# tasks file for nginx
+
+  - name: Install nginx
+    apt:
+      name: '{{ item }}'
+      update_cache: yes
+      cache_valid_time: 3600
+    with_items:
+      - nginx
+      - apache2-utils
+  #    - python-passlib
+
+  #- name: Setup kibana admin user
+  #  htpasswd:
+  #    path: /etc/nginx/htpasswd.users
+  #    name: kibanaadmin
+  #    password: manos
+
+  - name: Ensures consul dir exists
+    file:
+      path: /etc/consul.d
+      state: directory
+
+  - name: Copy default site config
+    template:
+      src:  '{{ item.src }}'
+      dest: '{{ item.dest}}'
+    with_items:
+      - { src: 'roles/nginx/templates/default',           dest: '/etc/nginx/sites-available/'}
+      - { src: 'roles/nginx/templates/nginx_consul.json', dest: '/etc/consul.d/'}
+
+  - name: Start the service
+    service:
+      name: nginx
+      state: restarted

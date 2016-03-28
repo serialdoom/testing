@@ -1,5 +1,5 @@
 ---
-# file: trnt_download.yml
+# file: consul.yml
 - hosts: consul
   roles:
     - { role: consul, become: True}

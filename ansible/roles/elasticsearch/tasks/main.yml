@@ -1,0 +1,33 @@
+---
+# tasks file for elasticsearch
+  - name: Add elasticsearch key
+    apt_key:
+      url: https://packages.elastic.co/GPG-KEY-elasticsearch
+      state: present
+    tags:
+      - elasticsearch_key
+
+  - name: Add repos required for elasticsearch
+    apt_repository:
+      repo: deb http://packages.elastic.co/elasticsearch/2.x/debian stable main
+      state: present
+
+  - name: Install elasticsearch
+    apt:
+      name: elasticsearch
+      update_cache: yes
+
+  - name: Ensures consul dir exists
+    file:
+      path: /etc/consul.d
+      state: directory
+
+  - name: Template elasticsearch consul file
+    template:
+      src: roles/elasticsearch/templates/elasticsearch_consul.json
+      dest: /etc/consul.d/
+
+  - name: Start elasticsearch service
+    service:
+      name: elasticsearch
+      state: restarted

@@ -1,3 +1,4 @@
 ---
   - include: trnt_download.yml
-  - include: consul.yml
+  #- include: consul.yml
+  - include: elk.yml

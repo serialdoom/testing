@@ -1,0 +1,14 @@
+---
+
+  - hosts: elasticsearch_server
+    roles:
+      - { role: elasticsearch, become: True}
+
+  - hosts: kibana_server
+    roles:
+      - { role: kibana, become: True}
+      - { role: nginx, become: True}
+
+  - hosts: consul
+    roles:
+      - { role: consul, become: True}

@@ -1,0 +1,33 @@
+---
+# tasks file for kibana
+  - name: Add elasticsearch key
+    apt_key:
+      url: https://packages.elastic.co/GPG-KEY-elasticsearch
+      state: present
+    tags:
+      - elasticsearch_key
+
+  - name: Add repos required for kibana
+    apt_repository:
+      repo: deb http://packages.elastic.co/kibana/4.4/debian stable main
+      state: present
+
+  - name: Install kibana
+    apt:
+      name: kibana
+      update_cache: yes
+
+  - name: Create consul.d directory
+    file:
+      name: /etc/consul.d/
+      state: directory
+
+  - name: Template elasticsearch consul file
+    template:
+      src: roles/kibana/templates/kibana_consul.json
+      dest: /etc/consul.d/
+
+  - name: Start kibana service
+    service:
+      name: kibana
+      state: started
