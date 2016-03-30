@@ -33,6 +33,14 @@
       - { src: "roles/consul/files/consul.conf", dest: "/etc/init/"}
       - { src: "roles/consul/files/10-consul", dest: "/etc/dnsmasq.d/"}
 
+  - name: Add consul as search term in resolv conf
+    lineinfile:
+      dest: /etc/resolvconf/resolv.conf.d/base
+      line: '{{ item }}'
+    with_items:
+      - "nameserver 127.0.0.1"
+      - "search service.consul"
+
   - name: Start the consul service
     shell: "stop consul || true && start consul"
 

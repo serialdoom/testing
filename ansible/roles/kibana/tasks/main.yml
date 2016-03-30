@@ -1,11 +1,11 @@
 ---
 # tasks file for kibana
-  - name: Add elasticsearch key
+  - name: Add kibana key
     apt_key:
       url: https://packages.elastic.co/GPG-KEY-elasticsearch
       state: present
     tags:
-      - elasticsearch_key
+      - kibana_key
 
   - name: Add repos required for kibana
     apt_repository:
@@ -22,7 +22,7 @@
       name: /etc/consul.d/
       state: directory
 
-  - name: Template elasticsearch consul file
+  - name: Template kibana consul file
     template:
       src: roles/kibana/templates/kibana_consul.json
       dest: /etc/consul.d/

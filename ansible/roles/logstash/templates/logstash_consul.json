@@ -1,10 +1,10 @@
 {
   "service": {
-    "name": "elasticsearch",
+    "name": "logstash",
     "tags": ["master"],
-    "port": 9200,
+    "port": 5601,
     "address": "{{ ansible_eth1.ipv4.address }}",
-    "id": "elasticsearch{{ ansible_eth1["ipv4"]["address"][10:13] }}",
+    "id": "logstash{{ ansible_eth1["ipv4"]["address"][10:13] }}",
     "enableTagOverride": false
   }
 }

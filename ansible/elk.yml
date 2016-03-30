@@ -4,6 +4,10 @@
     roles:
       - { role: elasticsearch, become: True}
 
+  - hosts: logstash_server
+    roles:
+      - { role: logstash, become: True}
+
   - hosts: kibana_server
     roles:
       - { role: kibana, become: True}

@@ -12,10 +12,13 @@
       repo: deb http://packages.elastic.co/elasticsearch/2.x/debian stable main
       state: present
 
-  - name: Install elasticsearch
+  - name: Install elasticsearch and unzip
     apt:
-      name: elasticsearch
+      name: '{{ item }}'
       update_cache: yes
+    with_items:
+      - elasticsearch
+      - unzip
 
   - name: Ensures consul dir exists
     file:
@@ -30,4 +33,24 @@
   - name: Start elasticsearch service
     service:
       name: elasticsearch
-      state: restarted
+      state: started
+
+  - name: Get the dashboards archive and filebeat index template
+    get_url:
+      url:  '{{ item }}'
+      dest: /home/vagrant/
+    with_items:
+      - https://download.elastic.co/beats/dashboards/beats-dashboards-1.1.0.zip
+      - https://gist.githubusercontent.com/thisismitch/3429023e8438cc25b86c/raw/d8c479e2a1adcea8b1fe86570e42abab0f10f364/filebeat-index-template.json
+
+  - name: Uncompress the archive
+    unarchive:
+      src: /home/vagrant/beats-dashboards-1.1.0.zip
+      dest: /home/vagrant/
+      copy: no
+
+  - name: Load the dashboards
+    shell: "/home/vagrant/beats-dashboards-1.1.0/load.sh"
+
+  - name: Load filebeat index template
+    shell: "curl -XPUT 'http://localhost:9200/_template/filebeat?pretty' -d@filebeat-index-template.json"

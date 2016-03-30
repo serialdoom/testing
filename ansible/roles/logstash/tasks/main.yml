@@ -1,0 +1,46 @@
+---
+# tasks file for logstash
+  - name: Add logstash key
+    apt_key:
+      url: https://packages.elastic.co/GPG-KEY-elasticsearch
+      state: present
+    tags:
+      - logstash_key
+
+  - name: Add the logstash repos
+    apt_repository:
+      repo: deb http://packages.elastic.co/logstash/2.2/debian stable main
+      state: present
+      update_cache: yes
+
+  - name: Install logstash
+    apt:
+      name: logstash
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: Create directories
+    file:
+      name:  '{{ item }}'
+      state: directory
+    with_items:
+      - /etc/consul.d/
+      - /etc/pki/tls/private/
+      - /etc/pki/tls/certs/
+
+  - name: Template logstash consul file
+    template:
+      src:  '{{ item.src }}'
+      dest: '{{ item.dest}}'
+    with_items:
+      - { src: 'roles/logstash/templates/logstash_consul.json',               dest: '/etc/consul.d/' }
+      - { src: 'roles/logstash/files/ssl_key/private/logstash-forwarder.key', dest: '/etc/pki/tls/private' }
+      - { src: 'roles/logstash/files/ssl_key/certs/logstash-forwarder.crt',   dest: '/etc/pki/tls/certs' }
+      - { src: 'roles/logstash/files/02-beats-input.conf',                    dest: '/etc/logstash/conf.d' }
+      - { src: 'roles/logstash/files/10-syslog-filter.conf',                  dest: '/etc/logstash/conf.d' }
+      - { src: 'roles/logstash/files/30-elasticsearch-output.conf',           dest: '/etc/logstash/conf.d' }
+
+  - name: Start the logstash service
+    service:
+      name: logstash
+      state: restarted
