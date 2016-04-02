@@ -20,7 +20,7 @@
       - elasticsearch
       - unzip
 
-  - name: Ensures consul dir exists
+  - name: Ensure consul dir exists
     file:
       path: /etc/consul.d
       state: directory
@@ -50,7 +50,9 @@
       copy: no
 
   - name: Load the dashboards
-    shell: "/home/vagrant/beats-dashboards-1.1.0/load.sh"
+    command: ./load.sh
+    args:
+      chdir: /home/vagrant/beats-dashboards-1.1.0
 
   - name: Load filebeat index template
     shell: "curl -XPUT 'http://localhost:9200/_template/filebeat?pretty' -d@filebeat-index-template.json"
