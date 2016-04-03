@@ -34,6 +34,7 @@
     service:
       name: elasticsearch
       state: started
+      enabled: yes
 
   - name: Get the dashboards archive and filebeat index template
     get_url:
