@@ -27,6 +27,12 @@
       src: roles/kibana/templates/kibana_consul.json
       dest: /etc/consul.d/
 
+  - name: Change elasticsearch URL
+    replace:
+      dest: '/opt/kibana/config/kibana.yml'
+      regexp: '# elasticsearch\.url.*'
+      replace: 'elasticsearch.url: "http://elasticsearch.service.consul:9200"'
+
   - name: Start kibana service
     service:
       name: kibana

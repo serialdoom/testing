@@ -30,6 +30,12 @@
       src: roles/elasticsearch/templates/elasticsearch_consul.json
       dest: /etc/consul.d/
 
+  - name: Set server host ip
+    replace:
+      dest: /etc/elasticsearch/elasticsearch.yml
+      regexp: '^# network\.host.*'
+      replace: 'network.host: {{ ansible_eth1["ipv4"]["address"]}}'
+
   - name: Start elasticsearch service
     service:
       name: elasticsearch

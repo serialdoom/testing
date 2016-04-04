@@ -2,7 +2,7 @@
   "service": {
     "name": "logstash",
     "tags": ["master"],
-    "port": 5601,
+    "port": 5044,
     "address": "{{ ansible_eth1.ipv4.address }}",
     "id": "logstash{{ ansible_eth1["ipv4"]["address"][10:13] }}",
     "enableTagOverride": false

@@ -39,9 +39,5 @@
       - { src: 'roles/logstash/files/02-beats-input.conf',                    dest: '/etc/logstash/conf.d' }
       - { src: 'roles/logstash/files/10-syslog-filter.conf',                  dest: '/etc/logstash/conf.d' }
       - { src: 'roles/logstash/files/30-elasticsearch-output.conf',           dest: '/etc/logstash/conf.d' }
-
-  - name: Start the logstash service
-    service:
-      name: logstash
-      state: started
-      enabled: yes
+    notify:
+      - Start the logstash service
