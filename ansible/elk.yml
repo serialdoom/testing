@@ -8,6 +8,10 @@
     roles:
       - { role: logstash, become: True}
 
+  - hosts: filebeat_server
+    roles:
+      - { role: filebeat, become: True}
+
   - hosts: kibana_server
     roles:
       - { role: kibana, become: True}

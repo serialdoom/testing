@@ -20,6 +20,18 @@
       - elasticsearch
       - unzip
 
+  - name: Set server host ip
+    replace:
+      dest: /etc/elasticsearch/elasticsearch.yml
+      regexp: '^# network\.host.*'
+      replace: 'network.host: ["{{ ansible_eth1["ipv4"]["address"]}}", "localhost"]'
+
+  - name: Start elasticsearch service
+    service:
+      name: elasticsearch
+      state: started
+      enabled: yes
+
   - name: Ensure consul dir exists
     file:
       path: /etc/consul.d
@@ -29,18 +41,6 @@
     template:
       src: roles/elasticsearch/templates/elasticsearch_consul.json
       dest: /etc/consul.d/
-
-  - name: Set server host ip
-    replace:
-      dest: /etc/elasticsearch/elasticsearch.yml
-      regexp: '^# network\.host.*'
-      replace: 'network.host: {{ ansible_eth1["ipv4"]["address"]}}'
-
-  - name: Start elasticsearch service
-    service:
-      name: elasticsearch
-      state: started
-      enabled: yes
 
   - name: Get the dashboards archive and filebeat index template
     get_url:

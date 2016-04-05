@@ -1,0 +1,36 @@
+---
+# tasks file for filebeat
+  - name: Create directories
+    file:
+      name:  '{{ item }}'
+      state: directory
+    with_items:
+      - /etc/consul.d/
+      - /etc/pki/tls/certs/
+
+  - name: Copy certificate for logstash ssl
+    copy:
+      src: roles/logstash/files/ssl_key/certs/logstash-forwarder.crt
+      dest: /etc/pki/tls/certs/
+
+  - name: Add Beats repo key
+    apt_key:
+      url: https://packages.elastic.co/GPG-KEY-elasticsearch
+      state: present
+
+  - name: Add Beat source repo
+    apt_repository:
+      repo: deb https://packages.elastic.co/beats/apt stable main
+      state: present
+
+  - name: Install filebeat
+    apt:
+      name: filebeat
+      cache_valid_time: 3600
+
+  - name: Copy filebeat configurations
+    copy:
+      src: filebeat.yml
+      dest: /etc/filebeat/filebeat.yml
+    notify:
+      - Start filebeat service
