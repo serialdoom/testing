@@ -56,6 +56,10 @@
       dest: /home/vagrant/
       copy: no
 
+  - name: Pause for 10 sec waiting for the service to start
+    pause:
+      seconds: 10
+
   - name: Load the dashboards
     command: ./load.sh
     args:
