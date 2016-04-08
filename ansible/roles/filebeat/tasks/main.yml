@@ -28,6 +28,11 @@
       name: filebeat
       cache_valid_time: 3600
 
+  - name: Template filebeat consul configurations
+    template:
+      src: filebeat_consul.json
+      dest: /etc/consul.d/
+
   - name: Copy filebeat configurations
     copy:
       src: filebeat.yml

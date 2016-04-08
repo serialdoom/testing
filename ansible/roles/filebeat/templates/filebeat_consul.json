@@ -1,8 +1,7 @@
 {
   "service": {
-    "name": "nginx",
+    "name": "filebeat",
     "tags": ["master"],
-    "port": 80,
     "address": "{{ ansible_eth1.ipv4.address }}",
     "enableTagOverride": false
   }

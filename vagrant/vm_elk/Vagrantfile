@@ -44,8 +44,28 @@ Vagrant.configure(2) do |config|
     SHELL
   end
 
-  config.vm.define "filebeat" do |filebeat|
+  config.vm.define "filebeat1" do |filebeat|
     filebeat.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.0.104"
+    ssh_pub_key = File.readlines("./ssh/id_rsa.pub").first.strip
+    filebeat.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update && sudo apt-get upgrade -y
+      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+      echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
+    SHELL
+  end
+
+  config.vm.define "filebeat2" do |filebeat|
+    filebeat.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.0.105"
+    ssh_pub_key = File.readlines("./ssh/id_rsa.pub").first.strip
+    filebeat.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update && sudo apt-get upgrade -y
+      echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+      echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
+    SHELL
+  end
+
+  config.vm.define "filebeat3" do |filebeat|
+    filebeat.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)", ip: "192.168.0.106"
     ssh_pub_key = File.readlines("./ssh/id_rsa.pub").first.strip
     filebeat.vm.provision "shell", inline: <<-SHELL
       sudo apt-get update && sudo apt-get upgrade -y
